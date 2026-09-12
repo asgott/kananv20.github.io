@@ -315,12 +315,12 @@ html, body {
 
 .blood-pool {
   position: absolute;
-  top: 50%;    /* your current value */
-  left: 5%;    /* your current value */
+  top: 42.15%;    /* your current value */
+  left: 29.5%;    /* your current value */
   display: grid;
   grid-template-columns: repeat(10, 3.36vw);
   grid-template-rows: repeat(2, 3.36vw);
-  gap: 0.67vw;
+  gap: 0.84vw;
   pointer-events: all;
 }
 
