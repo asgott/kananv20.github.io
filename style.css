@@ -1,1 +1,390 @@
-f
+@import url('https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap');
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+  background: #000;
+}
+
+.sheet {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1488 / 2266;
+  background-image: url('background.png');
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  background-position: top left;
+}
+
+/* ── Roller container — invisible, full sheet size ── */
+.roller {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: transparent;
+  pointer-events: none;
+}
+
+.roller > * {
+  pointer-events: all;
+}
+
+/* health-tracker is inside roller but its children
+   aren't direct children of roller, so explicitly set them */
+.health-tracker {
+  pointer-events: none; /* tracker itself passes through */
+}
+
+.health-box {
+  pointer-events: all;  /* but each box is clickable */
+  width: 4vw;
+  height: 4vw;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+/* ── Pool label ── */
+.pool-label {
+  position: absolute;
+  top: 61.5%;
+  left: 18%;
+  font-family: 'MedievalSharp', serif;
+  font-size: 3.4vw;
+  color: transparent;
+  text-align: center;
+  background: transparent;
+  cursor: default;
+}
+
+/* ── Pool minus button ── */
+.pool-dec {
+  position: absolute;
+  top: 56%;
+  left: 15%;
+  background: none;
+  border: none;
+  color: transparent;
+  font-size: 15.8vw;
+  cursor: pointer;
+  opacity: 0.85;
+  transition: opacity 0.15s, transform 0.1s;
+}
+.pool-dec:hover  { opacity: 1; transform: scale(1.15); }
+.pool-dec:active { transform: scale(0.95); }
+
+/* ── Pool number box (kept together) ── */
+.pool-box {
+  position: absolute;
+  top: 63.3%;
+  left: 36.8%;
+  width: 6vw;
+  height: 4vw;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'MedievalSharp', serif;
+  font-size: 7.2vw;
+  color: #ffffff;
+  cursor: default;
+}
+
+/* ── Pool plus button ── */
+.pool-inc {
+  position: absolute;
+  top: 58%;
+  left: 51%;
+  background: none;
+  border: none;
+  color: transparent;
+  font-size: 15.8vw;
+  cursor: pointer;
+  opacity: 0.85;
+  transition: opacity 0.15s, transform 0.1s;
+}
+.pool-inc:hover  { opacity: 1; transform: scale(1.15); }
+.pool-inc:active { transform: scale(0.95); }
+
+/* ── Difficulty label ── */
+.diff-label {
+  position: absolute;
+  top: 61.5%;
+  left: 38%;
+  font-family: 'MedievalSharp', serif;
+  font-size: 1.4vw;
+  color: transparent;
+  background: transparent;
+  cursor: default;
+}
+
+/* ── Difficulty number box ── */
+.diff-box {
+  position: absolute;
+  top: 62.9%;
+  left: 70.6%;
+  width: 5vw;
+  height: 4vw;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'MedievalSharp', serif;
+  font-size: 5.2vw;
+  color: #ffffff;
+  cursor: default;
+}
+
+/* ── Difficulty up arrow ── */
+.diff-up {
+  position: absolute;
+  top: 60.8%;
+  left: 78.62%;
+  background: none;
+  border: none;
+  color: #ffffff;
+  font-size: 4.3vw;
+  cursor: pointer;
+  opacity: 0.85;
+  transition: opacity 0.15s, transform 0.1s;
+}
+.diff-up:hover  { opacity: 1; transform: scale(1.2); }
+.diff-up:active { transform: scale(0.9); }
+
+/* ── Difficulty down arrow ── */
+.diff-down {
+  position: absolute;
+  top: 63.9%;
+  left: 78.62%;
+  background: none;
+  border: none;
+  color: #ffffff;
+  font-size: 4.3vw;
+  cursor: pointer;
+  opacity: 0.85;
+  transition: opacity 0.15s, transform 0.1s;
+}
+.diff-down:hover  { opacity: 1; transform: scale(1.2); }
+.diff-down:active { transform: scale(0.9); }
+
+/* ── Result text box ── */
+.result-box {
+  position: absolute;
+  top: 71%;
+  left: 15.2%;
+  width: 35%;
+  height: 8vw;
+  background: transparent;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#resultText {
+  font-family: 'MedievalSharp', serif;
+  font-size: 3.8vw;
+  text-align: center;
+}
+#resultText.success { color: #4caf50; }
+#resultText.failure { color: #ffffff; }
+#resultText.botch   { color: #e53935; }
+
+/* ── Roll button ── */
+.roll-btn {
+  position: absolute;
+  top: 70.9%;
+  left: 52%;
+  width: 32%;
+  height: 8vw;
+  background: transparent;
+  border: none;
+  color: transparent;
+  font-size: 0;
+  cursor: pointer;
+}
+
+/* ── Dice tray ── */
+.dice-tray {
+  position: absolute;
+  top: 79.8%;
+  left: 18.8%;
+  width: 63.5%;
+  height: 9vw;
+  background: transparent;
+  border: none;
+  padding: 0.5%;
+  display: grid;
+  grid-template-columns: repeat(10, 1fr);
+  gap: 0.5vw;
+  align-content: start;
+}
+
+.die-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: popIn 0.2s ease-out;
+}
+
+@keyframes popIn {
+  from { transform: scale(0.4) rotate(-10deg); opacity: 0; }
+  to   { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+.die-wrap svg {
+  width: 100%;
+  height: auto;
+}
+.health-tracker {
+  position: absolute;
+  top: 5.95%;
+  right: 4.4%;
+  display: flex;
+  flex-direction: column;
+  gap: 2.085vw;
+}
+
+.health-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5vw;
+  justify-content: flex-end;
+}
+
+.health-label  { display: none; }
+.health-penalty { display: none; }
+
+.health-box {
+  width: 4vw;
+  height: 4vw;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.health-box[data-state="1"]::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to top right,
+    transparent calc(50% - 1.5px),
+    #1a1a1a calc(50% - 1.5px),
+    #1a1a1a calc(50% + 1.5px),
+    transparent calc(50% + 1.5px)
+  );
+}
+
+.health-box[data-state="2"]::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(
+      to top right,
+      transparent calc(50% - 1.5px),
+      #1a1a1a calc(50% - 1.5px),
+      #1a1a1a calc(50% + 1.5px),
+      transparent calc(50% + 1.5px)
+    ),
+    linear-gradient(
+      to bottom right,
+      transparent calc(50% - 1.5px),
+      #1a1a1a calc(50% - 1.5px),
+      #1a1a1a calc(50% + 1.5px),
+      transparent calc(50% + 1.5px)
+    );
+}
+
+.health-box[data-state="3"] {
+  background: #1a1a1a;
+}
+
+.blood-pool {
+  position: absolute;
+  top: 42.15%;   /* adjust to place over your PNG */
+  left: 29.5%;   /* adjust to place over your PNG */
+  display: grid;
+  grid-template-columns: repeat(10, 25px);
+  grid-template-rows: repeat(2, 25px);
+  gap: 7.5px;
+  pointer-events: all;
+}
+
+.blood-cell {
+  width: 25px;
+  height: 25px;
+  background: transparent;
+  cursor: pointer;
+  position: relative;
+}
+
+.blood-cell[data-filled="1"] {
+  background: #efeae0;
+}
+
+.dodge-btn {
+  position: absolute;
+  top: 41.8%;    /* adjust to your PNG */
+  left: 9%;    /* adjust to your PNG */
+  width: 17%;
+  height: 9vw;
+  background: transparent;
+  border: none;
+  font-family: 'MedievalSharp', serif;
+  font-size: 1.4vw;
+  color: transparent;
+  cursor: pointer;
+}
+
+.parry-btn {
+  position: absolute;
+  top: 41.7%;    /* adjust to your PNG */
+  left: 74.4%;   /* adjust to your PNG */
+  width: 17%;
+  height: 9vw;
+  background: transparent;
+  border: none;
+  font-family: 'MedievalSharp', serif;
+  font-size: 1.4vw;
+  color: transparent;
+  cursor: pointer;
+}
+
+.wpn-atk, .wpn-dmg {
+  position: absolute;
+  background: transparent;
+  border: none;
+  font-family: 'MedievalSharp', serif;
+  font-size: 1.2vw;
+  color: transparent;
+  cursor: pointer;
+  width: 9%;
+  height: 4.5vw;
+}
+
+/* Position each individually — adjust to your PNG */
+#swordcaneAtk { top: 6.8%;  left: 35.7%; }
+#swordcaneDmg { top: 6.8%;  left: 46.5%; }
+
+#daggerAtk    { top: 23.4%;  left: 35.7%; }
+#daggerDmg    { top: 23.4%;  left: 46.5%; }
+
+#deagleAtk    { top: 15.6%; left: 35.7%; }
+#deagleDmg    { top: 15.6%; left: 46.5%; }
+
+#biteAtk { top: 31.2%; left: 35.7%; }
+#biteDmg { top: 31.2%; left: 46.5%; }
