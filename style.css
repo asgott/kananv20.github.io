@@ -315,18 +315,18 @@ html, body {
 
 .blood-pool {
   position: absolute;
-  top: 42.15%;   /* adjust to place over your PNG */
-  left: 29.5%;   /* adjust to place over your PNG */
+  top: 50%;    /* your current value */
+  left: 5%;    /* your current value */
   display: grid;
-  grid-template-columns: repeat(10, 25px);
-  grid-template-rows: repeat(2, 25px);
-  gap: 7.5px;
+  grid-template-columns: repeat(10, 3.36vw);
+  grid-template-rows: repeat(2, 3.36vw);
+  gap: 0.67vw;
   pointer-events: all;
 }
 
 .blood-cell {
-  width: 25px;
-  height: 25px;
+  width: 3.36vw;
+  height: 3.36vw;
   background: transparent;
   cursor: pointer;
   position: relative;
