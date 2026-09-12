@@ -1,1 +1,143 @@
-f
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VtM Character Sheet</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="sheet">
+
+    <!-- ── Health Tracker ── -->
+    <div class="health-tracker" id="healthTracker">
+      <div class="health-row" data-level="bruised"  data-penalty="0">
+        <span class="health-label">Bruised</span>
+        <span class="health-penalty"></span>
+        <div class="health-box" data-state="0"></div>
+      </div>
+      <div class="health-row" data-level="hurt"     data-penalty="1">
+        <span class="health-label">Hurt</span>
+        <span class="health-penalty">−1</span>
+        <div class="health-box" data-state="0"></div>
+      </div>
+      <div class="health-row" data-level="injured"  data-penalty="1">
+        <span class="health-label">Injured</span>
+        <span class="health-penalty">−1</span>
+        <div class="health-box" data-state="0"></div>
+      </div>
+      <div class="health-row" data-level="wounded"  data-penalty="2">
+        <span class="health-label">Wounded</span>
+        <span class="health-penalty">−2</span>
+        <div class="health-box" data-state="0"></div>
+      </div>
+      <div class="health-row" data-level="mauled"   data-penalty="2">
+        <span class="health-label">Mauled</span>
+        <span class="health-penalty">−2</span>
+        <div class="health-box" data-state="0"></div>
+      </div>
+      <div class="health-row" data-level="crippled" data-penalty="5">
+        <span class="health-label">Crippled</span>
+        <span class="health-penalty">−5</span>
+        <div class="health-box" data-state="0"></div>
+      </div>
+      <div class="health-row" data-level="torpor"   data-penalty="0">
+        <span class="health-label">Torpor</span>
+        <span class="health-penalty"></span>
+        <div class="health-box" data-state="0"></div>
+      </div>
+    </div>
+
+ <!-- ── Dice Roller ── -->
+<div class="roller" id="roller">
+
+  <!-- Health Tracker (inside roller so pointer-events work) -->
+  <div class="health-tracker" id="healthTracker">
+    <div class="health-row" data-level="bruised"  data-penalty="0">
+      <div class="health-box" data-state="0"></div>
+    </div>
+    <div class="health-row" data-level="hurt"     data-penalty="1">
+      <div class="health-box" data-state="0"></div>
+    </div>
+    <div class="health-row" data-level="injured"  data-penalty="1">
+      <div class="health-box" data-state="0"></div>
+    </div>
+    <div class="health-row" data-level="wounded"  data-penalty="2">
+      <div class="health-box" data-state="0"></div>
+    </div>
+    <div class="health-row" data-level="mauled"   data-penalty="2">
+      <div class="health-box" data-state="0"></div>
+    </div>
+    <div class="health-row" data-level="crippled" data-penalty="5">
+      <div class="health-box" data-state="0"></div>
+    </div>
+    <div class="health-row" data-level="torpor"   data-penalty="0">
+      <div class="health-box" data-state="0"></div>
+    </div>
+  </div>
+
+  <!-- Blood Pool -->
+<div class="blood-pool" id="bloodPool">
+  <div class="blood-cell" data-filled="0"></div>
+  <div class="blood-cell" data-filled="0"></div>
+  <div class="blood-cell" data-filled="0"></div>
+  <div class="blood-cell" data-filled="0"></div>
+  <div class="blood-cell" data-filled="0"></div>
+  <div class="blood-cell" data-filled="0"></div>
+  <div class="blood-cell" data-filled="0"></div>
+  <div class="blood-cell" data-filled="0"></div>
+  <div class="blood-cell" data-filled="0"></div>
+  <div class="blood-cell" data-filled="0"></div>
+  <div class="blood-cell" data-filled="0"></div>
+  <div class="blood-cell" data-filled="0"></div>
+  <div class="blood-cell" data-filled="0"></div>
+  <div class="blood-cell" data-filled="0"></div>
+  <div class="blood-cell" data-filled="0"></div>
+  <div class="blood-cell" data-filled="0"></div>
+  <div class="blood-cell" data-filled="0"></div>
+  <div class="blood-cell" data-filled="0"></div>
+  <div class="blood-cell" data-filled="0"></div>
+  <div class="blood-cell" data-filled="0"></div>
+</div>
+
+<!-- Dodge button -->
+<button class="dodge-btn" id="dodgeBtn">Dodge</button>
+
+<!-- Parry button -->
+<button class="parry-btn" id="parryBtn">Parry</button>
+
+<!-- Weapon buttons -->
+<button class="wpn-atk" id="swordcaneAtk">Atk</button>
+<button class="wpn-dmg" id="swordcaneDmg">Dmg</button>
+
+<button class="wpn-atk" id="daggerAtk">Atk</button>
+<button class="wpn-dmg" id="daggerDmg">Dmg</button>
+
+<button class="wpn-atk" id="deagleAtk">Atk</button>
+<button class="wpn-dmg" id="deagleDmg">Dmg</button>
+
+<!-- Bite -->
+<button class="wpn-atk" id="biteAtk">Atk</button>
+<button class="wpn-dmg" id="biteDmg">Dmg</button>
+
+  <!-- Pool label -->
+  <div class="pool-label">Dice Pool</div>
+  <button class="pool-dec" id="decPool" aria-label="Remove die">&#9664;</button>
+  <div class="pool-box" id="poolDisplay">5</div>
+  <button class="pool-inc" id="incPool" aria-label="Add die">&#9654;</button>
+  <div class="diff-label">Difficulty</div>
+  <div class="diff-box" id="diffDisplay">6</div>
+  <button class="diff-up" id="incDiff" aria-label="Increase difficulty">&#9650;</button>
+  <button class="diff-down" id="decDiff" aria-label="Decrease difficulty">&#9660;</button>
+  <div class="result-box"><span id="resultText"></span></div>
+  <button class="roll-btn" id="rollBtn">Roll the dice</button>
+  <div class="dice-tray" id="diceTray"></div>
+
+</div> <!-- closes .roller -->
+</div> <!-- closes .sheet -->
+<script src="script.js"></script>
+</body>
+</html>
