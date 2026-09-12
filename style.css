@@ -388,3 +388,7 @@ html, body {
 
 #biteAtk { top: 31.2%; left: 35.7%; }
 #biteDmg { top: 31.2%; left: 46.5%; }
+
+button, div[data-state], div[data-filled], .health-box, .blood-cell {
+  touch-action: manipulation;
+}
