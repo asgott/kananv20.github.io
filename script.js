@@ -1,3 +1,12 @@
+let lastTap = 0;
+document.addEventListener('touchend', function(e) {
+  const now = Date.now();
+  if (now - lastTap < 300) {
+    e.preventDefault();
+  }
+  lastTap = now;
+}, { passive: false });
+
 document.addEventListener('DOMContentLoaded', () => {
 
   let pool = 5;
