@@ -9,35 +9,31 @@ document.addEventListener('touchend', function(e) {
 
 document.addEventListener('DOMContentLoaded', () => {
 
+  // --- Restore saved state ---
   const saved = JSON.parse(localStorage.getItem('charState') || '{}');
 
-if (saved.bloodCells) {
-  document.querySelectorAll('.blood-cell').forEach((cell, i) => {
-    if (saved.bloodCells[i] !== undefined)
-      cell.setAttribute('data-filled', saved.bloodCells[i]);
-  });
-}
+  if (saved.bloodCells) {
+    document.querySelectorAll('.blood-cell').forEach((cell, i) => {
+      if (saved.bloodCells[i] !== undefined)
+        cell.setAttribute('data-filled', saved.bloodCells[i]);
+    });
+  }
 
-if (saved.healthBoxes) {
-  document.querySelectorAll('.health-box').forEach((box, i) => {
-    if (saved.healthBoxes[i] !== undefined)
-      box.setAttribute('data-state', saved.healthBoxes[i]);
-  });
-}const saved = JSON.parse(localStorage.getItem('charState') || '{}');
+  if (saved.healthBoxes) {
+    document.querySelectorAll('.health-box').forEach((box, i) => {
+      if (saved.healthBoxes[i] !== undefined)
+        box.setAttribute('data-state', saved.healthBoxes[i]);
+    });
+  }
 
-if (saved.bloodCells) {
-  document.querySelectorAll('.blood-cell').forEach((cell, i) => {
-    if (saved.bloodCells[i] !== undefined)
-      cell.setAttribute('data-filled', saved.bloodCells[i]);
-  });
-}
-
-if (saved.healthBoxes) {
-  document.querySelectorAll('.health-box').forEach((box, i) => {
-    if (saved.healthBoxes[i] !== undefined)
-      box.setAttribute('data-state', saved.healthBoxes[i]);
-  });
-}
+  // --- Save helper ---
+  function saveState() {
+    const bloodCells = [...document.querySelectorAll('.blood-cell')]
+      .map(c => c.getAttribute('data-filled'));
+    const healthBoxes = [...document.querySelectorAll('.health-box')]
+      .map(b => b.getAttribute('data-state'));
+    localStorage.setItem('charState', JSON.stringify({ bloodCells, healthBoxes }));
+  }
 
   let pool = 5;
   let diff  = 6;
@@ -48,112 +44,101 @@ if (saved.healthBoxes) {
   const diceTray    = document.getElementById('diceTray');
 
   document.querySelectorAll('.blood-cell').forEach(cell => {
-  cell.addEventListener('click', () => {
-    const filled = cell.getAttribute('data-filled') === '1';
-    cell.setAttribute('data-filled', filled ? '0' : '1');
-    saveState();
-  });
-});
-
-  function saveState() {
-  const bloodCells = [...document.querySelectorAll('.blood-cell')]
-    .map(c => c.getAttribute('data-filled'));
-  const healthBoxes = [...document.querySelectorAll('.health-box')]
-    .map(b => b.getAttribute('data-state'));
-  localStorage.setItem('charState', JSON.stringify({ bloodCells, healthBoxes }));
-}
-
-document.getElementById('dodgeBtn').addEventListener('click', () => {
-  triggerRoll(10, 6, 'Dodge');
-});
-
-document.getElementById('parryBtn').addEventListener('click', () => {
-  triggerRoll(11, 6, 'Parry');
-});
-
-const WEAPONS = {
-  swordcane: { atk: { pool: 8,  diff: 6 }, dmg: { pool: 8, diff: 6 } },
-  dagger:    { atk: { pool: 8,  diff: 6 }, dmg: { pool: 7, diff: 6 } },
-  deagle:    { atk: { pool: 7,  diff: 6 }, dmg: { pool: 5, diff: 6 } },
-  bite: { atk: { pool: 7, diff: 5 }, dmg: { pool: 7, diff: 6 } },
-};
-
-// Stores bonus dice from the most recent attack roll, keyed by weapon
-const bonusCache = {
-  swordcane: 0,
-  dagger:    0,
-  deagle:    0,
-  bite: 0,
-};
-
-function weaponAtk(id) {
-  const wpn = WEAPONS[id];
-  const penalty = getHealthPenalty();
-  const effectivePool = Math.max(1, wpn.atk.pool - penalty);
-
-  const rolls = [];
-  for (let i = 0; i < effectivePool; i++) rolls.push(Math.floor(Math.random() * 10) + 1);
-
-  let successes = 0;
-  let ones = 0;
-  const types = [];
-
-  rolls.forEach(r => {
-    if (r === 10)               { successes += 2; types.push('crit_success'); }
-    else if (r >= wpn.atk.diff) { successes += 1; types.push('success');      }
-    else if (r === 1)           { ones++;          types.push('crit_fail');    }
-    else                        {                  types.push('failure');      }
+    cell.addEventListener('click', () => {
+      const filled = cell.getAttribute('data-filled') === '1';
+      cell.setAttribute('data-filled', filled ? '0' : '1');
+      saveState();
+    });
   });
 
-  successes = Math.max(0, successes - ones);
-  const botch = successes === 0 && ones > 0;
+  document.getElementById('dodgeBtn').addEventListener('click', () => {
+    triggerRoll(10, 6, 'Dodge');
+  });
 
-  const bonus = successes > 1 ? successes - 1 : 0;
-  bonusCache[id] = bonus;
+  document.getElementById('parryBtn').addEventListener('click', () => {
+    triggerRoll(11, 6, 'Parry');
+  });
 
-  pool = effectivePool;
-  diff = wpn.atk.diff;
-  poolDisplay.textContent = pool;
-  diffDisplay.textContent = diff;
+  const WEAPONS = {
+    swordcane: { atk: { pool: 8,  diff: 6 }, dmg: { pool: 8, diff: 6 } },
+    dagger:    { atk: { pool: 8,  diff: 6 }, dmg: { pool: 7, diff: 6 } },
+    deagle:    { atk: { pool: 7,  diff: 6 }, dmg: { pool: 5, diff: 6 } },
+    bite:      { atk: { pool: 7,  diff: 5 }, dmg: { pool: 7, diff: 6 } },
+  };
 
-  renderTray(rolls, types);
+  const bonusCache = {
+    swordcane: 0,
+    dagger:    0,
+    deagle:    0,
+    bite:      0,
+  };
 
-  const penaltyNote = penalty > 0 ? ` [-${penalty}]` : '';
-  const label = `${id} ${bonus > 0 ? ` (+${bonus})` : ''}${penaltyNote}`;
-  renderResult(successes, botch, label);
-}
+  function weaponAtk(id) {
+    const wpn = WEAPONS[id];
+    const penalty = getHealthPenalty();
+    const effectivePool = Math.max(1, wpn.atk.pool - penalty);
 
-function weaponDmg(id) {
-  const wpn = WEAPONS[id];
-  const bonus = bonusCache[id];
-  bonusCache[id] = 0;
+    const rolls = [];
+    for (let i = 0; i < effectivePool; i++) rolls.push(Math.floor(Math.random() * 10) + 1);
 
-  const penalty = getHealthPenalty();
-  const totalPool = Math.max(1, wpn.dmg.pool + bonus - penalty);
+    let successes = 0;
+    let ones = 0;
+    const types = [];
 
-  pool = totalPool;
-  diff = wpn.dmg.diff;
-  poolDisplay.textContent = pool;
-  diffDisplay.textContent = diff;
+    rolls.forEach(r => {
+      if (r === 10)               { successes += 2; types.push('crit_success'); }
+      else if (r >= wpn.atk.diff) { successes += 1; types.push('success');      }
+      else if (r === 1)           { ones++;          types.push('crit_fail');    }
+      else                        {                  types.push('failure');      }
+    });
 
-  const penaltyNote = penalty > 0 ? ` [-${penalty} wound]` : '';
-  const label = `${id} ${bonus > 0 ? ` (${wpn.dmg.pool} + ${bonus})` : ''}${penaltyNote}`;
-  rollDice(totalPool, wpn.dmg.diff, label);
-}
+    successes = Math.max(0, successes - ones);
+    const botch = successes === 0 && ones > 0;
 
-document.getElementById('swordcaneAtk').addEventListener('click', () => weaponAtk('swordcane'));
-document.getElementById('swordcaneDmg').addEventListener('click', () => weaponDmg('swordcane'));
+    const bonus = successes > 1 ? successes - 1 : 0;
+    bonusCache[id] = bonus;
 
-document.getElementById('daggerAtk').addEventListener('click', () => weaponAtk('dagger'));
-document.getElementById('daggerDmg').addEventListener('click', () => weaponDmg('dagger'));
+    pool = effectivePool;
+    diff = wpn.atk.diff;
+    poolDisplay.textContent = pool;
+    diffDisplay.textContent = diff;
 
-document.getElementById('deagleAtk').addEventListener('click', () => weaponAtk('deagle'));
-document.getElementById('deagleDmg').addEventListener('click', () => weaponDmg('deagle'));
+    renderTray(rolls, types);
 
-document.getElementById('biteAtk').addEventListener('click', () => weaponAtk('bite'));
-document.getElementById('biteDmg').addEventListener('click', () => weaponDmg('bite'));
+    const penaltyNote = penalty > 0 ? ` [-${penalty}]` : '';
+    const label = `${id}${bonus > 0 ? ` (+${bonus})` : ''}${penaltyNote}`;
+    renderResult(successes, botch, label);
+  }
 
+  function weaponDmg(id) {
+    const wpn = WEAPONS[id];
+    const bonus = bonusCache[id];
+    bonusCache[id] = 0;
 
+    const penalty = getHealthPenalty();
+    const totalPool = Math.max(1, wpn.dmg.pool + bonus - penalty);
+
+    pool = totalPool;
+    diff = wpn.dmg.diff;
+    poolDisplay.textContent = pool;
+    diffDisplay.textContent = diff;
+
+    const penaltyNote = penalty > 0 ? ` [-${penalty} wound]` : '';
+    const label = `${id}${bonus > 0 ? ` (${wpn.dmg.pool} + ${bonus})` : ''}${penaltyNote}`;
+    rollDice(totalPool, wpn.dmg.diff, label);
+  }
+
+  document.getElementById('swordcaneAtk').addEventListener('click', () => weaponAtk('swordcane'));
+  document.getElementById('swordcaneDmg').addEventListener('click', () => weaponDmg('swordcane'));
+
+  document.getElementById('daggerAtk').addEventListener('click', () => weaponAtk('dagger'));
+  document.getElementById('daggerDmg').addEventListener('click', () => weaponDmg('dagger'));
+
+  document.getElementById('deagleAtk').addEventListener('click', () => weaponAtk('deagle'));
+  document.getElementById('deagleDmg').addEventListener('click', () => weaponDmg('deagle'));
+
+  document.getElementById('biteAtk').addEventListener('click', () => weaponAtk('bite'));
+  document.getElementById('biteDmg').addEventListener('click', () => weaponDmg('bite'));
 
   document.getElementById('incPool').addEventListener('click', () => {
     if (pool < 20) { pool++; poolDisplay.textContent = pool; }
@@ -179,29 +164,29 @@ document.getElementById('biteDmg').addEventListener('click', () => weaponDmg('bi
   };
 
   function rollDice(numDice, difficulty, label) {
-  const penalty = getHealthPenalty();
-  const effectivePool = Math.max(1, numDice - penalty);
+    const penalty = getHealthPenalty();
+    const effectivePool = Math.max(1, numDice - penalty);
 
-  const rolls = [];
-  for (let i = 0; i < effectivePool; i++) rolls.push(Math.floor(Math.random() * 10) + 1);
+    const rolls = [];
+    for (let i = 0; i < effectivePool; i++) rolls.push(Math.floor(Math.random() * 10) + 1);
 
-  let successes = 0;
-  let ones      = 0;
-  const types   = [];
+    let successes = 0;
+    let ones      = 0;
+    const types   = [];
 
-  rolls.forEach(r => {
-    if (r === 10)             { successes += 2; types.push('crit_success'); }
-    else if (r >= difficulty) { successes += 1; types.push('success');      }
-    else if (r === 1)         { ones++;          types.push('crit_fail');    }
-    else                      {                  types.push('failure');      }
-  });
+    rolls.forEach(r => {
+      if (r === 10)             { successes += 2; types.push('crit_success'); }
+      else if (r >= difficulty) { successes += 1; types.push('success');      }
+      else if (r === 1)         { ones++;          types.push('crit_fail');    }
+      else                      {                  types.push('failure');      }
+    });
 
-  successes = Math.max(0, successes - ones);
-  const botch = successes === 0 && ones > 0;
+    successes = Math.max(0, successes - ones);
+    const botch = successes === 0 && ones > 0;
 
-  renderTray(rolls, types);
-  renderResult(successes, botch, label);
-}
+    renderTray(rolls, types);
+    renderResult(successes, botch, label);
+  }
 
   function renderResult(successes, botch, label) {
     const prefix = label ? `${label}: ` : '';
@@ -256,16 +241,16 @@ document.getElementById('biteDmg').addEventListener('click', () => weaponDmg('bi
     });
   });
 
- window.getHealthPenalty = function() {
-  let highest = 0;
-  document.querySelectorAll('.health-row').forEach(row => {
-    const state = parseInt(row.querySelector('.health-box').getAttribute('data-state'));
-    if (state > 0) {
-      const penalty = parseInt(row.getAttribute('data-penalty'));
-      if (penalty > highest) highest = penalty;
-    }
-  });
-  return highest;
-};
+  window.getHealthPenalty = function() {
+    let highest = 0;
+    document.querySelectorAll('.health-row').forEach(row => {
+      const state = parseInt(row.querySelector('.health-box').getAttribute('data-state'));
+      if (state > 0) {
+        const penalty = parseInt(row.getAttribute('data-penalty'));
+        if (penalty > highest) highest = penalty;
+      }
+    });
+    return highest;
+  };
 
 });
