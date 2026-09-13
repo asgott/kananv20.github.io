@@ -9,6 +9,36 @@ document.addEventListener('touchend', function(e) {
 
 document.addEventListener('DOMContentLoaded', () => {
 
+  const saved = JSON.parse(localStorage.getItem('charState') || '{}');
+
+if (saved.bloodCells) {
+  document.querySelectorAll('.blood-cell').forEach((cell, i) => {
+    if (saved.bloodCells[i] !== undefined)
+      cell.setAttribute('data-filled', saved.bloodCells[i]);
+  });
+}
+
+if (saved.healthBoxes) {
+  document.querySelectorAll('.health-box').forEach((box, i) => {
+    if (saved.healthBoxes[i] !== undefined)
+      box.setAttribute('data-state', saved.healthBoxes[i]);
+  });
+}const saved = JSON.parse(localStorage.getItem('charState') || '{}');
+
+if (saved.bloodCells) {
+  document.querySelectorAll('.blood-cell').forEach((cell, i) => {
+    if (saved.bloodCells[i] !== undefined)
+      cell.setAttribute('data-filled', saved.bloodCells[i]);
+  });
+}
+
+if (saved.healthBoxes) {
+  document.querySelectorAll('.health-box').forEach((box, i) => {
+    if (saved.healthBoxes[i] !== undefined)
+      box.setAttribute('data-state', saved.healthBoxes[i]);
+  });
+}
+
   let pool = 5;
   let diff  = 6;
 
@@ -21,8 +51,17 @@ document.addEventListener('DOMContentLoaded', () => {
   cell.addEventListener('click', () => {
     const filled = cell.getAttribute('data-filled') === '1';
     cell.setAttribute('data-filled', filled ? '0' : '1');
+    saveState();
   });
 });
+
+  function saveState() {
+  const bloodCells = [...document.querySelectorAll('.blood-cell')]
+    .map(c => c.getAttribute('data-filled'));
+  const healthBoxes = [...document.querySelectorAll('.health-box')]
+    .map(b => b.getAttribute('data-state'));
+  localStorage.setItem('charState', JSON.stringify({ bloodCells, healthBoxes }));
+}
 
 document.getElementById('dodgeBtn').addEventListener('click', () => {
   triggerRoll(10, 6, 'Dodge');
@@ -213,6 +252,7 @@ document.getElementById('biteDmg').addEventListener('click', () => weaponDmg('bi
     box.addEventListener('click', () => {
       const current = parseInt(box.getAttribute('data-state'));
       box.setAttribute('data-state', (current + 1) % 4);
+      saveState();
     });
   });
 
